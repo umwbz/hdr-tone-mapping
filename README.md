@@ -1,27 +1,18 @@
 # HDR Tone Mapping using Zero-DCE
 
-A web-based image enhancement application that improves low-light images using the Zero-DCE (Zero-Reference Deep Curve Estimation) model. The application provides an interactive interface built with Gradio and a deployed API for real-time image enhancement.
-
----
-
-## 🌐 Live API Endpoint (HuggingFace Space)
-
-You can directly use the deployed model via API:
-
-### 🔗 Enhance Endpoint
-
-POST https://umscorleonis-hdr-tone-mapping-space.hf.space/enhance
+A web-based image enhancement system that improves low-light images using the Zero-DCE (Zero-Reference Deep Curve Estimation) model. The system provides HDR-like tone mapping results through a Gradio interface and a REST API endpoint deployed on HuggingFace Spaces.
 
 ---
 
 ## 🚀 Features
 
 - Low-light image enhancement
-- HDR-like tone mapping
-- Deep learning-based image processing using Zero-DCE
-- Gradio interactive interface
-- FastAPI / API-based inference support
-- Real-time image enhancement
+- HDR-like tone mapping effect
+- Deep learning-based Zero-DCE model
+- Real-time processing
+- REST API support
+- Gradio interactive UI
+- Web demo integration (HTML frontend)
 
 ---
 
@@ -31,9 +22,10 @@ POST https://umscorleonis-hdr-tone-mapping-space.hf.space/enhance
 ├── app.py
 ├── model.py
 ├── requirements.txt
+├── snapshots/
+│   └── Epoch99.pth
 ├── README.md
-└── snapshots/
-    └── Epoch99.pth
+└── web_demo.html
 
 ---
 
@@ -51,79 +43,101 @@ POST https://umscorleonis-hdr-tone-mapping-space.hf.space/enhance
 
 ## 📥 Installation
 
-Clone the repository:
+### Clone Repository
 
 git clone https://github.com/your-username/hdr-tone-mapping.git
 cd hdr-tone-mapping
 
 ---
 
-Install dependencies:
+### Install Dependencies
 
 pip install -r requirements.txt
 
 ---
 
-## 🧠 Model Weights
+## 📦 Model Weights
 
-Download pretrained Zero-DCE model:
+Download pretrained Zero-DCE model and place it here:
 
 snapshots/Epoch99.pth
 
 ---
 
-## ▶️ Run Application
+## ▶️ Run Locally
 
 python app.py
 
-After running, a Gradio interface will open where you can upload images and get enhanced results.
+After running, Gradio interface will be available for image upload and enhancement.
 
 ---
 
-## 🔌 API Endpoint Usage (HuggingFace)
+## 🔌 API Endpoint
 
-### 📤 Request Example (Python)
+You can directly use the deployed model without running locally:
+
+### 🔗 Enhance Endpoint
+
+POST https://umscorleonis-hdr-tone-mapping-space.hf.space/enhance
+
+---
+
+POST /enhance
+
+### 📤 Example Request (Python)
 
 import requests
 
 url = "https://umscorleonis-hdr-tone-mapping-space.hf.space/enhance"
 
 files = {
-    "file": open("image.png", "rb")
+    "file": open("image.jpg", "rb")
 }
 
 response = requests.post(url, files=files)
 
-with open("output.png", "wb") as f:
+with open("result.png", "wb") as f:
     f.write(response.content)
 
 ---
 
-## 🧠 Method
+## 📥 Response Types
 
-This project uses Zero-DCE (Zero-Reference Deep Curve Estimation), a deep learning model for low-light image enhancement that does not require paired training data. It learns image enhancement curves directly from input images.
+The API supports two types of responses:
 
----
+### 1. Binary Image (Recommended)
+- Returns PNG image directly
 
-## 🛠 Technology Stack
+### 2. JSON Response (Optional)
+```json
+{
+  "result_base64": "iVBORw0KGgoAAAANSUhEUg..."
+}
 
-- Python
-- PyTorch
-- Zero-DCE Model
-- OpenCV
-- NumPy
-- Pillow
-- Gradio
-- FastAPI (deployment API)
+## Model Weights
 
----
+Download the pretrained Zero-DCE model (`Epoch99.pth`) and place it inside the `snapshots` folder:
 
-## 👩‍💻 Author
+```text
+snapshots/Epoch99.pth
+```
+
+## Run the Application
+
+```bash
+python app.py
+```
+
+After running the script, a Gradio interface will be launched locally. You can upload an image and obtain the enhanced result directly through the web interface.
+
+## Method
+
+This project utilizes the Zero-DCE model, a deep learning approach for low-light image enhancement that learns pixel-wise enhancement curves without requiring paired training data.
+
+## Author
 
 Sukma Wati
 
----
+## License
 
-## 📄 License
-
-This project is intended for educational and research purposes only.
+This project is intended for educational and research purposes.
