@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HDR Tone Mapping Test</title>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #89f7fe, #66a6ff);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+  }
+
+  .container {
+    background: #fff;
+    padding: 30px 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    text-align: center;
+    width: 90%;
+    max-width: 500px;
+  }
+
+  h1 {
+    font-size: 26px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+
+  input[type="file"] {
+    display: none;
+  }
+
+  label {
+    background: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 15px;
+    transition: 0.3s;
+  }
+
+  label:hover {
+    background: #0056d2;
+  }
+
+  #preview {
+    width: 100%;
+    max-height: 250px;
+    object-fit: contain;
+    margin: 15px 0;
+    border-radius: 10px;
+    display: none;
+    border: 1px solid #ddd;
+  }
+
+  button {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  button:hover {
+    background: #218838;
+  }
+
+  #loading {
+    display: none;
+    color: #555;
+    font-size: 15px;
+    margin-top: 10px;
+  }
+
+  #loading::after {
+    content: "⏳";
+    animation: spin 1.2s infinite;
+    display: inline-block;
+    margin-left: 8px;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  h2 {
+    margin-top: 25px;
+    color: #444;
+  }
+
+  #resultImg {
+    width: 100%;
+    max-height: 300px;
+    object-fit: contain;
+    border-radius: 10px;
+    margin-top: 10px;
+    display: none;
+    border: 1px solid #ddd;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🌅 HDR Tone Mapping</h1>
+
+  <label for="imageInput">📁 Pilih Gambar</label>
+  <input type="file" id="imageInput" accept="image/*">
+
+  <img id="preview" src="" alt="Preview">
+
+  <button id="submitBtn">🚀 Proses HDR Tone Mapping</button>
+  <div id="loading">Sedang memproses... mohon tunggu sebentar</div>
+
+  <h2>Hasil:</h2>
+  <img id="resultImg" src="" alt="Hasil akan muncul di sini">
+</div>
+
+<script>
+const ENDPOINT = "https://umscorleonis-hdr-tone-mapping-space.hf.space/enhance";
+const imageInput = document.getElementById("imageInput");
+const submitBtn = document.getElementById("submitBtn");
+const loading = document.getElementById("loading");
+const resultImg = document.getElementById("resultImg");
+const preview = document.getElementById("preview");
+
+// ✅ Tampilkan preview saat user memilih gambar
+imageInput.addEventListener("change", () => {
+  const file = imageInput.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      preview.src = e.target.result;
+      preview.style.display = "block";
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+submitBtn.addEventListener("click", async () => {
+  const file = imageInput.files[0];
+  if (!file) return alert("Silakan pilih gambar terlebih dahulu!");
+
+  const formData = new FormData();
+  formData.append("file", file, file.name);
+
+  loading.style.display = "block";
+  resultImg.style.display = "none";
+
+  try {
+    const response = await fetch(ENDPOINT, {
+      method: "POST",
+      body: formData
+    });
+
+    const contentType = response.headers.get("content-type") || "";
+
+    if (contentType.includes("application/json")) {
+      const data = await response.json();
+      if (data.result_base64) {
+        resultImg.src = "data:image/png;base64," + data.result_base64;
+        resultImg.style.display = "block";
+        alert("✅ HDR Tone Mapping berhasil!");
+      } else {
+        alert("⚠️ Tidak ditemukan field 'result_base64' dalam respon JSON.");
+        console.log(data);
+      }
+    } else {
+      const blob = await response.blob();
+      resultImg.src = URL.createObjectURL(blob);
+      resultImg.style.display = "block";
+      alert("✅ HDR Tone Mapping berhasil!");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("❌ Terjadi error saat mengirim request ke API.");
+  } finally {
+    loading.style.display = "none";
+  }
+});
+</script>
+</body>
+</html>
