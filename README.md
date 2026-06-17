@@ -18,7 +18,7 @@ A web-based image enhancement system that improves low-light images using the Ze
 
 ## 📦 Project Structure
 
-.
+```text
 ├── app.py
 ├── model.py
 ├── requirements.txt
@@ -27,7 +27,7 @@ A web-based image enhancement system that improves low-light images using the Ze
 ├── README.md
 └── web_demo.html
 
----
+```
 
 ## ⚙️ Requirements
 
